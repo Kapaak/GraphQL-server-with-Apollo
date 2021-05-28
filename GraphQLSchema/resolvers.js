@@ -1,21 +1,27 @@
 const dummyData = require("../data");
+const Person = require("../MongoSchema/person");
 
 const resolvers = {
 	Query: {
 		getAllPersons() {
-			return dummyData;
+			return Person.find({});
 		},
 		getPerson(parent, args) {
-			console.log(args.id);
-			return dummyData[args.id];
+			return Person.findById({ _id: args.id });
 		},
-		hello: () => "Hello world!",
 	},
 	Mutation: {
 		createPerson(parent, args) {
-			const newPerson = { ...args };
-			dummyData.push(newPerson);
-			return newPerson;
+			const newPerson = new Person({
+				name: args.name,
+				surname: args.surname,
+				age: args.age,
+			});
+			return newPerson.save();
+		},
+		deletePerson(parent, args) {
+			Person.findByIdAndDelete({ _id: args.id });
+			return args.id;
 		},
 	},
 };
